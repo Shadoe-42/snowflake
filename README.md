@@ -46,16 +46,16 @@ local, private research directory that is not part of this repo and is not synce
 | `docs/architecture/05-cost-governance.md` | Resource monitors, usage-based pricing, and why auto-suspend actually matters |
 | `docs/architecture/06-open-table-formats.md` | Iceberg Tables, catalog choice (Snowflake / external / Apache Polaris) |
 | `docs/architecture/07-cross-cloud-resilience.md` | Snowgrid replication/failover -- deliberately lighter-weight, held to the same skepticism as the rest of this repo |
-| `docs/integrations/csp-crosswalk.md` | Placeholder -- AWS vs. GCP mechanics (storage integration, Snowpipe triggers, private connectivity), kept separate from the cloud-neutral core |
+| `docs/integrations/csp-crosswalk.md` | AWS vs. GCP mechanics: storage integration (IAM role vs. service account), Snowpipe triggers (SQS/SNS vs. Pub/Sub), private connectivity (PrivateLink vs. Private Service Connect) |
 | `docs/sharing/sharing-clean-rooms.md` | Placeholder -- Secure Data Sharing & Data Clean Rooms, sequenced with Phase 3 |
 | `terraform/` | Placeholder -- not started. Planned as a cloud-agnostic core module plus `aws/`/`gcp/` submodules |
 | `examples/` | Placeholder -- empty until the architecture docs are stable enough to demonstrate concretely against Harborline |
 
 ## Roadmap
 
-- **Phase 1 -- General architecture (in progress).** The seven architecture docs above are
-  written as full prose. Still open: weaving Harborline's examples through sections 01-04,
-  the CSP crosswalk doc, and Terraform.
+- **Phase 1 -- General architecture (in progress).** The seven architecture docs and the
+  CSP crosswalk doc are written as full prose. Still open: weaving Harborline's examples
+  through sections 01-04, and Terraform.
 - **Phase 2 -- GenAI/Cortex narrowing (not started).** Branches from Phase 1 into Cortex AI,
   LLM Functions, RAG, and Snowflake ML, still on Harborline.
 - **Phase 3 -- Fin data warehouse variant (not started).** A new fictional company, its own
