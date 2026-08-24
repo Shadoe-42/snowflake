@@ -58,7 +58,7 @@ have something concrete to hang an example on, not an oversight.
 
 ## Open items
 
-- Network policies / row-column security depth not fully scoped yet.
+- Network policies / row-column security depth not fully scoped yet -- the one remaining
+  Phase 1 gap, left flagged rather than guessed at.
 - Iceberg/Polaris and Horizon Catalog Terraform resource coverage not yet researched --
   only matters once those sections get Terraform of their own.
-- HLD diagram(s) for Phase 1 architecture -- no visual yet.

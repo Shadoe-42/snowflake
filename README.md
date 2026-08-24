@@ -34,6 +34,14 @@ marketing claims (benchmark numbers, "near-instant" language) are flagged for ve
 against docs and behavior rather than repeated as fact. Source documents themselves live in a
 local, private research directory that is not part of this repo and is not synced to GitHub.
 
+## Architecture diagram
+
+![Harborline Logistics -- Snowflake Platform Architecture](harborline_snowflake_platform_hld.png)
+
+Ingestion, the RAW/ANALYTICS schema split, workload-isolated warehouses, and the RBAC
+on-ramp -- the same pieces docs 01-04 cover in prose, laid out as one picture. Source is
+`harborline_snowflake_platform_hld.svg`.
+
 ## Structure
 
 | Path | What is there |
@@ -51,14 +59,14 @@ local, private research directory that is not part of this repo and is not synce
 | `terraform/core/` | Cloud-agnostic Snowflake resources: resource monitor, warehouses, database/schemas, RBAC |
 | `terraform/aws/` | S3 + IAM storage integration, direct S3-to-SQS Snowpipe auto-ingest |
 | `terraform/gcp/` | GCS + service-account storage integration, GCS-notification-to-Pub/Sub Snowpipe auto-ingest |
+| `harborline_snowflake_platform_hld.svg` / `.png` | Phase 1 architecture diagram |
 | `examples/` | Placeholder -- empty until the architecture docs are stable enough to demonstrate concretely against Harborline |
 
 ## Roadmap
 
-- **Phase 1 -- General architecture (in progress).** The seven architecture docs, the
-  CSP crosswalk doc, and Terraform (core/aws/gcp, all `terraform validate`-clean) are
-  built, with Harborline's examples woven through sections 01-04. Still open: an HLD
-  diagram.
+- **Phase 1 -- General architecture (complete).** The seven architecture docs, the CSP
+  crosswalk doc, Terraform (core/aws/gcp, all `terraform validate`-clean), Harborline's
+  examples woven through sections 01-04, and the HLD diagram are all built.
 - **Phase 2 -- GenAI/Cortex narrowing (not started).** Branches from Phase 1 into Cortex AI,
   LLM Functions, RAG, and Snowflake ML, still on Harborline.
 - **Phase 3 -- Fin data warehouse variant (not started).** A new fictional company, its own
