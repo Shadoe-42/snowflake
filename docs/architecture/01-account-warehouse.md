@@ -6,7 +6,10 @@ Status: draft, seeded from research (2026-08-24)
   data science, GenAI/Cortex later) rather than one shared warehouse -- avoids resource
   contention and makes cost attribution clean.
 - Multi-cluster warehouses as the default answer to "how do we handle bursty/concurrent load"
-  instead of manual resizing -- scales automatically as concurrency fluctuates.
+  instead of manual resizing -- scales automatically as concurrency fluctuates. Not a day-one requirement for
+  every warehouse -- start single-cluster where concurrency is genuinely low, and reach for
+  multi-cluster on the warehouses that actually see contention. The point is having the lever
+  available and understood, not turning it on everywhere by default.
 - Auto-suspend + auto-resume on every warehouse, no exceptions. Lock down who can disable
   either setting.
 - CREATE WAREHOUSE and MODIFY privileges restricted to a small admin set -- prevents

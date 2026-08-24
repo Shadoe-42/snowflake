@@ -6,6 +6,16 @@ Scope: broad "does it all" Snowflake reference architecture. Built small and inc
 this is the foundation Phase 2 (GenAI/Cortex) and Phase 3 (fin data warehouse) both branch
 from later.
 
+## Motivating scenario & scale calibration
+
+This is not built for Amex- or Capital One-scale requirements on day one. The realistic
+starting point for exploring Snowflake is an organization that already has meaningful data
+volume and a platform that's straining under it -- not a greenfield toy, not a hyperscale
+bank either. "Small and incremental" means: don't front-load every enterprise-grade control
+as if it's required from the first deployment. Patterns in this doc set that scale up
+(the full four-layer RBAC hierarchy, multi-cluster warehouses, Horizon Catalog) are noted
+with an on-ramp where it matters -- what to start with vs. what you grow into.
+
 ## Ground rules for this doc set
 
 - **CSP-neutral.** Worded as "integrates with your CSP's object storage / IAM / eventing,"

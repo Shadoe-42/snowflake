@@ -15,6 +15,13 @@ Four-layer role hierarchy (production-ready pattern, not the toy "just use SYSAD
 - Hard rule: grant privileges to roles, grant roles to roles/users -- never grant privileges
   directly to a user.
 
+**Scale on-ramp**: the full four-layer hierarchy is where you land as team size and
+compliance requirements grow, not where a first deployment needs to start. A reasonable
+starting point is Access Roles + Functional Roles only (skip the Service Role layer until
+you actually have multiple automated pipelines/tools needing isolated identities), with the
+"grant to roles, never to users" rule held firm from day one regardless of layer count --
+that discipline is cheap early and expensive to retrofit later.
+
 ## Catalog, classification & data protection
 
 - Horizon Catalog as the governance backbone -- tagging, classification, lineage, and access
