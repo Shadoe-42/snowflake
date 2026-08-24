@@ -9,13 +9,25 @@ from later.
 
 ## Motivating scenario & scale calibration
 
-This is not built for Amex- or Capital One-scale requirements on day one. The realistic
-starting point for exploring Snowflake is an organization that already has meaningful data
-volume and a platform that's straining under it -- not a greenfield toy, not a hyperscale
-bank either. "Small and incremental" means: don't front-load every enterprise-grade control
-as if it's required from the first deployment. Patterns in this doc set that scale up
-(the full four-layer RBAC hierarchy, multi-cluster warehouses, Horizon Catalog) are noted
-with an on-ramp where it matters -- what to start with vs. what you grow into.
+**Harborline Logistics** is the fictional company this architecture is built around, starting
+from this doc forward. Harborline is a mid-size logistics and distribution company: real
+order, shipment, and inventory volume, a platform straining under growth, not a greenfield
+toy and not an Amex- or Capital One-scale requirement on day one. That's a deliberate choice --
+"small and incremental" means don't front-load every enterprise-grade control as if it's
+required from the first deployment. Patterns in this doc set that scale up (the full
+four-layer RBAC hierarchy, multi-cluster warehouses, Horizon Catalog) are noted with an
+on-ramp where it matters -- what Harborline starts with vs. what it grows into as the
+platform matures.
+
+Harborline anchors Phase 1 and Phase 2 (GenAI/Cortex narrowing). Phase 3 introduces a
+separate fictional company when it picks up the fin data warehouse variant, rather than
+stretching Harborline into a domain it was never meant to represent -- the same pattern used
+elsewhere for scenario-specific fictional companies.
+
+Note: as of this writing, Harborline is introduced here and in the repo-level framing: the
+seven section docs (01-07) don't yet consistently reference Harborline by name in their
+prose. Weaving the company through each section's examples is tracked as an open item
+(see TRACKING.md), not yet claimed as done.
 
 ## Ground rules for this doc set
 

@@ -1,9 +1,21 @@
+# Internal working documents -- not for public consumption
+TRACKING.md
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+*.tfvars
+
+# OS / editor noise
 .DS_Store
 *.swp
 .idea/
 .vscode/
-*.tfstate
-*.tfstate.backup
-.terraform/
-.terraform.lock.hcl
-*.tfvars
