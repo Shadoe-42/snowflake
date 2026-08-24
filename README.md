@@ -26,8 +26,9 @@ by Terraform, built incrementally.
 
 ## Source material
 
-Vendor white papers and other reference docs live in the sibling snowflake_docs/ directory,
-not in this repo -- this repo is what we build, not what we collect.
+Source material (vendor white papers, reference docs) is kept in a local, private
+research directory that is not part of this repo and is not synced to GitHub -- this repo
+is what we build, not what we collect.
 
 ## Status
 

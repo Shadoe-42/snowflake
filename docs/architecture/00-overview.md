@@ -23,10 +23,10 @@ with an on-ramp where it matters -- what to start with vs. what you grow into.
   Snowflake's SQL/RBAC/warehouse behavior is genuinely near-identical across clouds, so
   cloud specifics only belong at the integration seams.
 - **Vendor material gets treated as a capability map, not gospel.** Several sections draw on
-  Snowflake's own white papers ("Modern Data Platform Requirements," 2025, and others in
-  snowflake_docs/). Useful for identifying capability categories and terminology; marketing
-  claims (benchmark numbers, "near-instant" language) are flagged for verification against
-  docs/behavior rather than repeated as fact.
+  Snowflake's own white papers ("Modern Data Platform Requirements," 2025, and others from a
+  private, non-synced research directory). Useful for identifying capability categories and
+  terminology; marketing claims (benchmark numbers, "near-instant" language) are flagged for
+  verification against docs/behavior rather than repeated as fact.
 - **Domain-agnostic on purpose.** No fake business scenario forced onto Phase 1. Phase 2 and
   Phase 3 pick concrete domains (GenAI use case, fin services) when they narrow.
 

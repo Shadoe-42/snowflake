@@ -40,5 +40,6 @@ that discipline is cheap early and expensive to retrofit later.
 
 - Building a Production-Ready Snowflake RBAC -- Snowflake Builders Blog:
   https://medium.com/snowflake/building-a-production-ready-snowflake-rbac-architecture-best-practices-and-setup-guide-73ce30e4db78
-- "Modern Data Platform Requirements" white paper, Snowflake Inc., 2025 (snowflake_docs/) --
-  vendor material, treated as a capability map, not independent verification.
+- "Modern Data Platform Requirements" white paper, Snowflake Inc., 2025 (private research
+  directory, not part of this repo) -- vendor material, treated as a capability map, not
+  independent verification.

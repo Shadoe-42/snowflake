@@ -11,5 +11,6 @@ Status: draft, seeded from white paper research (2026-08-24)
 
 ## Sources
 
-- "Modern Data Platform Requirements" white paper, Snowflake Inc., 2025 (snowflake_docs/) --
-  vendor material, treated as a capability map, not independent verification.
+- "Modern Data Platform Requirements" white paper, Snowflake Inc., 2025 (private research
+  directory, not part of this repo) -- vendor material, treated as a capability map, not
+  independent verification.
