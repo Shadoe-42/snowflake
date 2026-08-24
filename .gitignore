@@ -19,3 +19,6 @@ override.tf.json
 *.swp
 .idea/
 .vscode/
+
+# Files the device-bridge sandbox couldn't delete outright; moved here instead
+_to_delete/
