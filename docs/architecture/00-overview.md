@@ -1,6 +1,7 @@
 # Architecture Overview
 
-Status: draft, seeded from research (2026-08-24)
+Status: draft (full prose, 2026-08-24) -- sections 01-07 written; CSP crosswalk,
+sharing/clean rooms, and Terraform are still separate, not-yet-started pieces.
 
 Scope: broad "does it all" Snowflake reference architecture. Built small and incremental --
 this is the foundation Phase 2 (GenAI/Cortex) and Phase 3 (fin data warehouse) both branch
