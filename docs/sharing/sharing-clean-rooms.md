@@ -21,24 +21,52 @@ this share, whatever else exists alongside it.
 
 ## What actually makes it privacy-preserving
 
-The single most important design decision in `terraform/sharing/` isn't a policy, it's what
-the share exposes in the first place: `LANTERNES_V_MERCHANT_INSIGHTS` is a secure view that
+The most important design decision in `terraform/sharing/` isn't a policy, it's what the
+share exposes in the first place: `LANTERNES_V_MERCHANT_INSIGHTS` is a secure view that
 aggregates `TRANSACTIONS` to merchant, merchant category code, and day -- transaction counts
 and summed amounts, never an individual row. There is no cardholder-level join surface in
 that view for a consumer to reach, even in the hypothetical where every policy layered on
 top of it were misconfigured. That ordering matters: aggregation is the privacy boundary
 itself, not a control bolted onto raw data after the fact.
 
-Two policies sit underneath as defense in depth, not as the primary mechanism:
-`terraform/sharing/policies.tf` masks `CARD_TOKEN` to its last four characters for every
-role except an internal analyst role (the token is already tokenized upstream of Snowflake,
-so this is redaction on top of tokenization, not the only thing standing between a query and
-a real card number), and a row access policy scopes which `MERCHANT_ID` rows are visible to
-a given consumer, driven by an illustrative `MERCHANT_ENTITLEMENTS` mapping table. A tag
-(`terraform/sharing/classification.tf`) marks `CARD_TOKEN` as `cardholder_data` up front,
-the same Horizon Catalog tag-driven pattern documented in
-`docs/architecture/02-security-governance-rbac.md` -- classify once, let policy attach to
-the classification rather than being configured per-object.
+Aggregation alone isn't sufficient, though, and it's worth being honest about where it falls
+short: a low-volume cell -- a single-transaction day for a small merchant -- leaks that
+transaction's exact amount through the aggregate itself, no join required. The view's
+`HAVING COUNT(*) >= 10` (the threshold is `var.min_aggregation_cell_size`, illustrative, not
+derived from a rigorous privacy analysis) is basic small-cell suppression against that
+specific leak. It is not a formal differential-privacy guarantee, and shouldn't be
+represented as one -- Snowflake has real differential-privacy tooling for organizations that
+need that stronger guarantee, and adopting it is a reasonable next step this repo doesn't
+attempt.
+
+Row-level scoping is a second, independent control on top of the aggregation boundary, not a
+restatement of it: which `MERCHANT_ID` rows a given consumer's aggregates cover is enforced
+by `terraform/sharing/row_access.tf`, scoped by database role rather than account identity.
+This corrects an earlier draft of this module, which checked `CURRENT_ACCOUNT()` against a
+mapping table -- that isn't how Snowflake actually scopes row access on shared data, verified
+against Snowflake's own documentation after the fact. The real mechanism: grant a distinct
+database role to each consumer through the share (`snowflake_grant_database_role`, with
+`share_name` set), and have the row access policy check `IS_DATABASE_ROLE_IN_SESSION()`
+against it. One share, multiple database roles granted to it, multiple visibility levels --
+`LANTERNES_DBROLE_PARTNER_ACME` illustrates the shape one onboarded partner's role would
+take; a real deployment would have one such role per partner. `LANTERNES_DBROLE_INTERNAL_ANALYST`
+gets full visibility and is never granted to any share -- also not yet wired to an actual
+account role or user, since Lanternes' broader RBAC (the `terraform/core` equivalent
+Harborline has) wasn't built for this phase, per `docs/fin-warehouse/00-overview.md`.
+
+A column-level masking policy was deliberately left out of this module, after an earlier
+draft included one that protected nothing: it referenced `CARD_TOKEN`, a column the shared
+view never selects in the first place, and was never actually attached to any column via a
+masking policy application. Rather than keep a policy that exists for the appearance of a
+control, this module relies on the aggregation boundary doing the actual work -- there is no
+object in `terraform/sharing/` that a masking policy would meaningfully protect. A stricter,
+internal-only view that did surface `CARD_TOKEN` for fraud or ops use would be a legitimate
+reason to add one back, scoped to that view specifically -- not built here.
+
+A tag (`terraform/sharing/classification.tf`) marks `CARD_TOKEN` as `cardholder_data` and
+the secure view itself as `aggregated` -- the same Horizon Catalog tag-driven pattern
+documented in `docs/architecture/02-security-governance-rbac.md`, both values actually
+applied to something rather than left as unused enum options.
 
 ## Where Data Clean Rooms add a layer
 
@@ -58,11 +86,12 @@ another describes join/column/activation policies enforced through analysis temp
 inconsistency reads like product evolution rather than a documentation error, but this repo
 isn't going to assert a single mechanical model as fact when Snowflake's own material
 doesn't agree with itself. Anyone implementing an actual cross-party clean room should verify
-the current mechanism against current docs before building against either description.
-There's also no dedicated Terraform resource for the Clean Rooms product itself in the
-pinned provider -- it's Marketplace/Native-App-provisioned, not SQL DDL, so it stays
-documented-only here, the same treatment given to private connectivity in Phase 1 and
-Document AI in Phase 2.
+the current mechanism against current docs before building against either description --
+the same verify-before-writing discipline that caught the `CURRENT_ACCOUNT()` mistake above,
+applied here as a forward warning instead of a retrospective fix. There's also no dedicated
+Terraform resource for the Clean Rooms product itself in the pinned provider -- it's
+Marketplace/Native-App-provisioned, not SQL DDL, so it stays documented-only here, the same
+treatment given to private connectivity in Phase 1 and Document AI in Phase 2.
 
 ## A note on scope
 
@@ -81,6 +110,8 @@ this repo: real operational experience with CSP marketplaces has been mixed enou
 
 ## Sources
 
+- Share data protected by a policy -- Snowflake Docs: https://docs.snowflake.com/en/user-guide/data-sharing-policy-protected-data
+- Understanding row access policies -- Snowflake Docs: https://docs.snowflake.com/en/user-guide/security-row-intro
 - Understanding Snowflake Data Clean Room policies -- Snowflake Docs: https://docs.snowflake.com/en/user-guide/cleanrooms/v1/policies
 - Snowflake Data Clean Room Q&A -- Snowflake Blog: https://www.snowflake.com/en/blog/data-clean-room-qa/
 - Mastercard Data Clean Room -- Mastercard: https://www.mastercard.com/global/en/business/insights-intelligence/advanced-analytics/solutions/mastercard-data-clean-room.html

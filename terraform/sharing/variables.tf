@@ -15,3 +15,9 @@ variable "snowflake_schema" {
   type        = string
   default     = "ANALYTICS"
 }
+
+variable "min_aggregation_cell_size" {
+  description = "Minimum row count a merchant/MCC/day/geography cell must have before it's included in the shared view. Basic small-cell suppression against re-identification from low-volume cells (e.g. a single-transaction day for a small merchant leaking that transaction's amount) -- not a formal differential-privacy guarantee, and the specific threshold is illustrative, not derived from any rigorous privacy analysis. See docs/sharing/sharing-clean-rooms.md."
+  type        = number
+  default     = 10
+}

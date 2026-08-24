@@ -10,7 +10,7 @@ the coupling between them is documented, not wired.
 | `aws/` | The AWS half of the [CSP crosswalk](../docs/integrations/csp-crosswalk.md): S3 landing bucket, IAM role/trust policy, `snowflake_storage_integration_aws`, and the direct S3-to-SQS Snowpipe auto-ingest wiring. |
 | `gcp/` | The GCP half of the same crosswalk: GCS landing bucket, `snowflake_storage_integration_gcs`, and the GCS-notification-to-Pub/Sub Snowpipe auto-ingest wiring via a `snowflake_notification_integration`. |
 | `genai/` | Phase 2: a semantic view for Cortex Analyst, a Cortex Search service, and a Cortex Agent tying both together -- see [docs/genai/](../docs/genai/). |
-| `sharing/` | Phase 3: a tag-classified column, a masking policy, a row access policy, a pre-aggregated secure view, and a share exposing only that view -- see [docs/sharing/sharing-clean-rooms.md](../docs/sharing/sharing-clean-rooms.md). |
+| `sharing/` | Phase 3: tag classification, a database-role-scoped row access policy, a pre-aggregated (small-cell-suppressed) secure view, and a share exposing only that view -- see [docs/sharing/sharing-clean-rooms.md](../docs/sharing/sharing-clean-rooms.md). |
 
 ## Why separate modules instead of one
 
@@ -54,6 +54,17 @@ itself (as opposed to the plain Secure Data Sharing this module builds) has
 no dedicated Terraform resource in the pinned provider -- it's
 Marketplace/Native-App-provisioned, so it stays documented-only, per
 `docs/sharing/sharing-clean-rooms.md`.
+
+`sharing/` originally included a masking policy on `CARD_TOKEN`. It was removed, not
+patched: the shared secure view never selects that column, and the policy was never
+attached to any column via a masking policy application, so it protected nothing --
+caught during a deliberate adversarial self-review, not by `terraform validate` (which
+only checks syntax, not whether pieces are actually wired together). That review also
+caught that the row access policy's original mechanism, a `CURRENT_ACCOUNT()` self-join,
+isn't how Snowflake actually scopes row access on shared data -- it now uses
+`IS_DATABASE_ROLE_IN_SESSION()` against a database role granted to the share, matching
+Snowflake's documented pattern. See `docs/sharing/sharing-clean-rooms.md` for the full
+account.
 
 ## The AWS two-phase apply
 

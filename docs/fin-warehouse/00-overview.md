@@ -38,10 +38,12 @@ data actually arrives far better than file-based Snowpipe does.
 **Sensitive data by default, not by exception.** Every row in Lanternes' transaction data
 touches payment card data in some form. `CARD_TOKEN` in the illustrative schema below is
 already tokenized -- the actual cardholder number never lands in Snowflake, tokenization
-happens upstream in the payment processing path itself, out of this repo's scope. Even a
-token gets masked by default here (`terraform/sharing/policies.tf`), on the principle that a
-masking policy misconfiguration should degrade to "shows a token" not "shows a real card
-number."
+happens upstream in the payment processing path itself, out of this repo's scope. Nothing
+this repo's Terraform builds ever exposes `CARD_TOKEN` to a share consumer at all -- the
+privacy boundary is that the shared object is a pre-aggregated view that never selects the
+column, not a masking policy layered on top of one that does. See
+`docs/sharing/sharing-clean-rooms.md` for why an earlier draft's masking policy was removed
+rather than kept as a decorative control.
 
 **PCI DSS is flagged, not addressed.** This repo does not attempt to document PCI DSS
 compliance architecture -- that's a real, audited compliance framework requiring actual
@@ -55,8 +57,8 @@ network policies in Phase 1.
 `TRANSACTIONS`: `TRANSACTION_ID`, `CARD_TOKEN`, `MERCHANT_ID`, `MCC` (merchant category
 code), `AMOUNT`, `TXN_TIMESTAMP`, `TXN_GEOGRAPHY`. Not created by this repo's Terraform --
 same scoping choice made for `SHIPMENTS` in Phase 1 and Phase 2. `MERCHANT_ENTITLEMENTS`
-(referenced by the row access policy in `terraform/sharing/policies.tf`) maps which merchant
-a given share consumer is entitled to see -- also illustrative, also not created.
+(referenced by the row access policy in `terraform/sharing/row_access.tf`) maps a merchant
+to the database role entitled to see it -- also illustrative, also not created.
 
 ## Sources
 
