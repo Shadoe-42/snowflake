@@ -55,10 +55,15 @@ on-ramp -- the same pieces docs 01-04 cover in prose, laid out as one picture. S
 | `docs/architecture/06-open-table-formats.md` | Iceberg Tables, catalog choice (Snowflake / external / Apache Polaris) |
 | `docs/architecture/07-cross-cloud-resilience.md` | Snowgrid replication/failover -- deliberately lighter-weight, held to the same skepticism as the rest of this repo |
 | `docs/integrations/csp-crosswalk.md` | AWS vs. GCP mechanics: storage integration (IAM role vs. service account), Snowpipe triggers (SQS/SNS vs. Pub/Sub), private connectivity (PrivateLink vs. Private Service Connect) |
+| `docs/genai/00-overview.md` | Phase 2 scope: what's covered (Cortex Analyst/Search/Agents) and what's deliberately deferred (Document AI, Cortex Functions, Snowflake ML) |
+| `docs/genai/01-cortex-analyst.md` | Semantic views (the modern, Terraformed replacement for the legacy YAML semantic model), natural-language-to-SQL |
+| `docs/genai/02-cortex-search.md` | Hybrid semantic + keyword search over unstructured text, kept fresh via target_lag |
+| `docs/genai/03-cortex-agents.md` | Orchestration/tool-routing, and why an agent needs no identity of its own |
 | `docs/sharing/sharing-clean-rooms.md` | Placeholder -- Secure Data Sharing & Data Clean Rooms, sequenced with Phase 3 |
 | `terraform/core/` | Cloud-agnostic Snowflake resources: resource monitor, warehouses, database/schemas, RBAC |
 | `terraform/aws/` | S3 + IAM storage integration, direct S3-to-SQS Snowpipe auto-ingest |
 | `terraform/gcp/` | GCS + service-account storage integration, GCS-notification-to-Pub/Sub Snowpipe auto-ingest |
+| `terraform/genai/` | A Cortex Analyst semantic view, a Cortex Search service, and a Cortex Agent tying both together |
 | `harborline_snowflake_platform_hld.svg` / `.png` | Phase 1 architecture diagram |
 | `examples/` | Placeholder -- empty until the architecture docs are stable enough to demonstrate concretely against Harborline |
 
@@ -67,8 +72,10 @@ on-ramp -- the same pieces docs 01-04 cover in prose, laid out as one picture. S
 - **Phase 1 -- General architecture (complete).** The seven architecture docs, the CSP
   crosswalk doc, Terraform (core/aws/gcp, all `terraform validate`-clean), Harborline's
   examples woven through sections 01-04, and the HLD diagram are all built.
-- **Phase 2 -- GenAI/Cortex narrowing (not started).** Branches from Phase 1 into Cortex AI,
-  LLM Functions, RAG, and Snowflake ML, still on Harborline.
+- **Phase 2 -- GenAI/Cortex narrowing (complete for its chosen scope).** Cortex Analyst
+  (via semantic views), Cortex Search, and Cortex Agents -- docs and Terraform
+  (`terraform/genai/`, `terraform validate`-clean), still on Harborline. Document AI, Cortex
+  Functions, and Snowflake ML were deliberately scoped out -- see `docs/genai/00-overview.md`.
 - **Phase 3 -- Fin data warehouse variant (not started).** A new fictional company, its own
   domain, and the Sharing & Data Clean Rooms doc.
 

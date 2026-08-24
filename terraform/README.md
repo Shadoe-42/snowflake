@@ -1,6 +1,6 @@
 # Terraform
 
-Three independent modules. Each validates on its own; none of them reference
+Four independent modules. Each validates on its own; none of them reference
 each other via Terraform (no remote state data sources, no module blocks) --
 the coupling between them is documented, not wired.
 
@@ -9,8 +9,9 @@ the coupling between them is documented, not wired.
 | `core/` | Cloud-agnostic Snowflake-provider resources: resource monitor, warehouses, database/schemas, RBAC (Access Roles + Functional Roles). Applies to any Snowflake account regardless of which cloud it's hosted on. |
 | `aws/` | The AWS half of the [CSP crosswalk](../docs/integrations/csp-crosswalk.md): S3 landing bucket, IAM role/trust policy, `snowflake_storage_integration_aws`, and the direct S3-to-SQS Snowpipe auto-ingest wiring. |
 | `gcp/` | The GCP half of the same crosswalk: GCS landing bucket, `snowflake_storage_integration_gcs`, and the GCS-notification-to-Pub/Sub Snowpipe auto-ingest wiring via a `snowflake_notification_integration`. |
+| `genai/` | Phase 2: a semantic view for Cortex Analyst, a Cortex Search service, and a Cortex Agent tying both together -- see [docs/genai/](../docs/genai/). |
 
-## Why three modules instead of one
+## Why separate modules instead of one
 
 `core` is genuinely cloud-agnostic -- there's nothing in it that changes based
 on which cloud is hosting the Snowflake account. `aws` and `gcp` are the two
@@ -18,7 +19,11 @@ places in this repo's scope where the integration is provider-specific enough
 that Terraform resources actually differ by cloud, not just by naming
 convention. Splitting them means a reader (or CI) evaluating "what does the
 AWS integration path look like" doesn't have to mentally filter out GCP
-resources, and vice versa.
+resources, and vice versa. `genai` is a different kind of split again -- not
+cloud-specific like `aws`/`gcp`, but phase-specific: it's Phase 2 work layered
+on top of the Phase 1 foundation `core` builds, and keeping it separate means
+someone evaluating Phase 1 alone doesn't have to read past Cortex resources
+that assume Phase 1 already exists.
 
 ## What's intentionally *not* here
 
@@ -35,7 +40,10 @@ The target tables referenced in each module's `copy_statement` (e.g.
 `RAW_LANDING`) aren't defined anywhere in these modules. Table DDL belongs
 with concrete data-modeling examples, not with the ingestion plumbing, and
 Harborline's data model doesn't exist yet in this repo -- see the Phase 1
-open items in `TRACKING.md`.
+open items in `TRACKING.md`. The same is true of `genai/`'s `SHIPMENTS` and
+`CARRIER_DOCUMENTS` -- both illustrative, neither created by this repo's
+Terraform. See `docs/genai/00-overview.md` for what else is deliberately out
+of scope in Phase 2 (Document AI, Cortex Functions, Snowflake ML).
 
 ## The AWS two-phase apply
 
@@ -69,7 +77,7 @@ access to the bucket happens in the same apply.
 
 Each module is `terraform init && terraform validate`-clean against the
 pinned provider versions in its own `.terraform.lock.hcl`. CI runs `terraform
-fmt -check` and `terraform validate` against all three on every push -- see
+fmt -check` and `terraform validate` against all four on every push -- see
 `.github/workflows/terraform-ci.yml`.
 
 None of this has been applied against a live Snowflake account, AWS account,
