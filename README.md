@@ -57,7 +57,8 @@ local, private research directory that is not part of this repo and is not synce
 
 - **Phase 1 -- General architecture (in progress).** The seven architecture docs, the
   CSP crosswalk doc, and Terraform (core/aws/gcp, all `terraform validate`-clean) are
-  built. Still open: weaving Harborline's examples through sections 01-04.
+  built, with Harborline's examples woven through sections 01-04. Still open: an HLD
+  diagram.
 - **Phase 2 -- GenAI/Cortex narrowing (not started).** Branches from Phase 1 into Cortex AI,
   LLM Functions, RAG, and Snowflake ML, still on Harborline.
 - **Phase 3 -- Fin data warehouse variant (not started).** A new fictional company, its own
