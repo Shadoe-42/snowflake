@@ -83,6 +83,20 @@ warehouse, no data-duplication cost to running several at once, and no meaningfu
 cost to suspending and resuming one. The pattern only makes sense because the underlying
 architecture makes it cheap.
 
+## Harborline in practice
+
+Harborline runs three warehouses today, matching the workload-isolation split above:
+`HARBORLINE_WH_ELT` for nightly order/shipment loads out of the TMS, `HARBORLINE_WH_BI` for
+dispatch dashboards, and `HARBORLINE_WH_DATA_SCIENCE` for route-optimization notebooks (see
+`terraform/core/warehouses.tf`). All three are single-cluster and share one account-level
+resource monitor -- Harborline doesn't have per-warehouse budget lines yet, so credit
+consumption is tracked at the account level for now, with the option to split later if any
+one warehouse's spend needs its own visibility. Auto-suspend is 60 seconds across the board,
+which suits ELT (scheduled, bursty) and data science (interactive, idle between runs) well;
+`HARBORLINE_WH_BI` is the one to watch as more dispatchers start hitting live dashboards
+during peak shipping windows -- the first candidate to flip to multi-cluster once queuing
+shows up, not before.
+
 ## Sources
 
 - Cost controls for warehouses -- Snowflake Docs:

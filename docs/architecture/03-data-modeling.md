@@ -62,6 +62,20 @@ monitoring, not maintenance: periodically checking clustering effectiveness via
 `SYSTEM$CLUSTERING_INFORMATION` to confirm the key is still earning its cost as data and
 query patterns evolve, rather than setting it once and assuming it stays optimal forever.
 
+## Harborline in practice
+
+Take Harborline's `SHIPMENTS` table: multi-terabyte, growing daily, queried almost
+exclusively by date range (dispatch dashboards) and by origin distribution center (ops
+reporting). That's exactly the profile explicit clustering keys are for --
+`(SHIP_DATE, ORIGIN_FACILITY_ID)` gives Snowflake enough distinct values to prune
+effectively without over-fragmenting partitions. Compare that to Harborline's
+`SHIPMENT_STATUS_CODES` reference table: a few dozen rows, nowhere near enough
+micro-partitions to matter -- clustering it would add reclustering overhead to a table small
+enough that a full scan is already instant. Neither table exists in this repo's Terraform
+yet (see `terraform/README.md` on why target-table DDL is out of scope for the ingestion
+modules) -- these are illustrative of the decision framework above, not a claim that this
+schema has been built.
+
 ## Sources
 
 - Micro-partitions & Data Clustering -- Snowflake Docs:

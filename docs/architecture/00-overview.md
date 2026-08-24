@@ -1,7 +1,8 @@
 # Architecture Overview
 
-Status: draft (full prose, 2026-08-24) -- sections 01-07 written; CSP crosswalk,
-sharing/clean rooms, and Terraform are still separate, not-yet-started pieces.
+Status: draft (full prose, 2026-08-24) -- sections 01-07 written, CSP crosswalk doc
+written, Terraform (core/aws/gcp) built and validate-clean, Harborline woven through 01-04.
+Sharing/clean rooms is still not started (sequenced with Phase 3).
 
 Scope: broad "does it all" Snowflake reference architecture. Built small and incremental --
 this is the foundation Phase 2 (GenAI/Cortex) and Phase 3 (fin data warehouse) both branch
@@ -24,10 +25,12 @@ separate fictional company when it picks up the fin data warehouse variant, rath
 stretching Harborline into a domain it was never meant to represent -- the same pattern used
 elsewhere for scenario-specific fictional companies.
 
-Note: as of this writing, Harborline is introduced here and in the repo-level framing: the
-seven section docs (01-07) don't yet consistently reference Harborline by name in their
-prose. Weaving the company through each section's examples is tracked as an open item
-(see TRACKING.md), not yet claimed as done.
+Docs 01-04 each carry a "Harborline in practice" section grounding the general
+principles in Harborline's actual setup -- its three warehouses, its RBAC roles, a couple of
+its tables, its ingestion sources. Docs 05-07 (cost governance, open table formats,
+cross-cloud resilience) don't yet, since Harborline hasn't grown into a second region or
+adopted Iceberg tables in this narrative -- that's an open item for whenever those sections
+have something concrete to hang an example on, not an oversight.
 
 ## Ground rules for this doc set
 
@@ -56,6 +59,6 @@ prose. Weaving the company through each section's examples is tracked as an open
 ## Open items
 
 - Network policies / row-column security depth not fully scoped yet.
-- Terraform provider coverage gaps not yet researched (Iceberg/Polaris and Horizon Catalog
-  resources worth checking specifically -- newer capabilities, provider support tends to lag).
-- Terraform sequencing (alongside docs vs. second pass) not yet decided.
+- Iceberg/Polaris and Horizon Catalog Terraform resource coverage not yet researched --
+  only matters once those sections get Terraform of their own.
+- HLD diagram(s) for Phase 1 architecture -- no visual yet.

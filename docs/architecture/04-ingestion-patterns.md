@@ -55,6 +55,19 @@ choice. On cost, both approaches charge similarly for compute and storage; the a
 shows up when target lag is set tighter than the use case needs -- a one-minute target lag on
 a table that's queried once a day burns credits for freshness nobody's using.
 
+## Harborline in practice
+
+Harborline's TMS (transportation management system) drops shipment-event files into cloud
+storage continuously throughout the day -- that's the Snowpipe auto-ingest case, wired up in
+`terraform/aws/` and `terraform/gcp/` against the `RAW` schema. Nightly batch extracts from
+the older inventory system, which only exports once a day, are a better fit for a scheduled
+`COPY INTO` run against `HARBORLINE_WH_ELT` -- there's no continuous-arrival problem to
+solve there, so Snowpipe's serverless overhead buys nothing. Downstream, the RAW-to-ANALYTICS
+transform (orders joined against shipment status, rolled up for the dispatch dashboards) is a
+Dynamic Table candidate: it's expressible as a single `SELECT`, and a 5-10 minute target lag
+is plenty fresh for BI -- comfortably above the 60-second floor, with no procedural logic
+that would push it toward Streams & Tasks instead.
+
 ## Sources
 
 - Best Practices for Data Ingestion with Snowflake -- Snowflake Blog:
