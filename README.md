@@ -17,8 +17,9 @@ narrowing of that same foundation, and a financial-services data warehouse varia
 mid-size logistics and distribution company -- real order, shipment, and inventory data
 volume, not a hyperscale enterprise. Every technology named here (Snowflake, AWS, GCP) is
 real and current; the company, its data, and its operations are not. Phase 3 introduces a
-second, separate fictional company when the fin data warehouse variant needs a different
-starting condition than Harborline's.
+second, separate fictional company, **Éclairage des Lanternes** (`lanternes` in Terraform
+and identifiers) -- a payments processor, needing a genuinely different starting condition
+than Harborline's rather than a domain stretched to fit.
 
 This is **reference architecture and reasoning**, not a production system. Nothing here has
 been run against a live Snowflake account, reviewed by a third-party auditor, or checked by a
@@ -59,11 +60,13 @@ on-ramp -- the same pieces docs 01-04 cover in prose, laid out as one picture. S
 | `docs/genai/01-cortex-analyst.md` | Semantic views (the modern, Terraformed replacement for the legacy YAML semantic model), natural-language-to-SQL |
 | `docs/genai/02-cortex-search.md` | Hybrid semantic + keyword search over unstructured text, kept fresh via target_lag |
 | `docs/genai/03-cortex-agents.md` | Orchestration/tool-routing, and why an agent needs no identity of its own |
-| `docs/sharing/sharing-clean-rooms.md` | Placeholder -- Secure Data Sharing & Data Clean Rooms, sequenced with Phase 3 |
+| `docs/fin-warehouse/00-overview.md` | Phase 3: what's different for Éclairage des Lanternes (payments) vs. Harborline's general foundation |
+| `docs/sharing/sharing-clean-rooms.md` | Secure Data Sharing and Data Clean Rooms: the aggregation-as-privacy-boundary pattern, and where the two diverge |
 | `terraform/core/` | Cloud-agnostic Snowflake resources: resource monitor, warehouses, database/schemas, RBAC |
 | `terraform/aws/` | S3 + IAM storage integration, direct S3-to-SQS Snowpipe auto-ingest |
 | `terraform/gcp/` | GCS + service-account storage integration, GCS-notification-to-Pub/Sub Snowpipe auto-ingest |
 | `terraform/genai/` | A Cortex Analyst semantic view, a Cortex Search service, and a Cortex Agent tying both together |
+| `terraform/sharing/` | A classified/masked/row-access-scoped column, a pre-aggregated secure view, and a share exposing only that view |
 | `harborline_snowflake_platform_hld.svg` / `.png` | Phase 1 architecture diagram |
 | `examples/` | Placeholder -- empty until the architecture docs are stable enough to demonstrate concretely against Harborline |
 
@@ -76,8 +79,11 @@ on-ramp -- the same pieces docs 01-04 cover in prose, laid out as one picture. S
   (via semantic views), Cortex Search, and Cortex Agents -- docs and Terraform
   (`terraform/genai/`, `terraform validate`-clean), still on Harborline. Document AI, Cortex
   Functions, and Snowflake ML were deliberately scoped out -- see `docs/genai/00-overview.md`.
-- **Phase 3 -- Fin data warehouse variant (not started).** A new fictional company, its own
-  domain, and the Sharing & Data Clean Rooms doc.
+- **Phase 3 -- Fin data warehouse variant (complete for its chosen scope).** Éclairage des
+  Lanternes (payments processor), a focused variant doc rather than a full 00-07 rebuild,
+  and the Sharing & Data Clean Rooms doc as the centerpiece -- plus Terraform
+  (`terraform/sharing/`, `terraform validate`-clean) for the privacy-preserving primitives
+  underneath it.
 
 ## License
 
