@@ -47,6 +47,12 @@ data "aws_iam_policy_document" "snowflake_trust" {
   }
 }
 
+# Read-only, tightened during an adversarial self-review: an earlier draft granted
+# s3:PutObject/s3:DeleteObject unconditionally. Nothing in this repo's pipe unloads or
+# purges data (see snowpipe_trigger.tf -- no PURGE, no unload path), so those permissions
+# were unused, and inconsistent with the GCS module's storage.objectViewer (read-only)
+# scope for the identical raw-landing ingestion job. Re-add Put/Delete deliberately, scoped
+# to a real unload/purge requirement, if one ever exists -- don't restore them speculatively.
 data "aws_iam_policy_document" "snowflake_bucket_access" {
   statement {
     effect    = "Allow"
@@ -56,7 +62,7 @@ data "aws_iam_policy_document" "snowflake_bucket_access" {
 
   statement {
     effect    = "Allow"
-    actions   = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"]
+    actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.raw_landing.arn}/*"]
   }
 }

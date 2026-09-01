@@ -16,11 +16,15 @@ variable "snowflake_schema" {
   default     = "ANALYTICS"
 }
 
-variable "analyst_warehouse" {
-  description = "Warehouse Cortex Analyst's generated SQL runs against. Defaults to the same HARBORLINE_WH_BI used by human BI/dashboard queries in terraform/core -- natural-language Q&A is an additional access pattern on the same warehouse, not a new one."
-  type        = string
-  default     = "HARBORLINE_WH_BI"
-}
+# No analyst_warehouse variable here. An earlier draft declared one, described as the
+# warehouse Cortex Analyst's generated SQL runs against -- but snowflake_semantic_view has
+# no warehouse attribute (confirmed against the live provider schema), and the variable was
+# never referenced by any resource in this module. Caught during an adversarial
+# self-review: docs/genai/01-cortex-analyst.md repeated the false claim as fact. Removed
+# rather than wired to something that doesn't exist -- Cortex Analyst's generated SQL runs
+# under the caller's session, on whatever warehouse that role already has USAGE on
+# (HARBORLINE_WH_BI for HARBORLINE_FR_ANALYST, granted in terraform/core/rbac.tf). That is
+# an RBAC/session property, not something this module configures.
 
 variable "search_warehouse" {
   description = "Warehouse that (re)indexes the Cortex Search service on its target_lag schedule."

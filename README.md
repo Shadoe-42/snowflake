@@ -75,7 +75,11 @@ on-ramp -- the same pieces docs 01-04 cover in prose, laid out as one picture. S
 
 - **Phase 1 -- General architecture (complete).** The seven architecture docs, the CSP
   crosswalk doc, Terraform (core/aws/gcp, all `terraform validate`-clean), Harborline's
-  examples woven through sections 01-04, and the HLD diagram are all built.
+  examples woven through sections 01-04, and the HLD diagram are all built. A later
+  adversarial self-review against `core/`, `aws/`, and `genai/` found and fixed a missing
+  RBAC path to `HARBORLINE_WH_DATA_SCIENCE`, a dead Terraform variable a GenAI doc had
+  wrongly described as real, an over-broad AWS IAM grant, and two stale status lines --
+  see `terraform/README.md`.
 - **Phase 2 -- GenAI/Cortex narrowing (complete for its chosen scope).** Cortex Analyst
   (via semantic views), Cortex Search, and Cortex Agents -- docs and Terraform
   (`terraform/genai/`, `terraform validate`-clean), still on Harborline. Document AI, Cortex

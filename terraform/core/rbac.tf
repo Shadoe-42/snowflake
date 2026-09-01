@@ -93,6 +93,21 @@ resource "snowflake_grant_account_role" "fr_elt_inherits_analytics_select" {
   parent_role_name = snowflake_account_role.fr_elt.name
 }
 
+# Added during an adversarial self-review: HARBORLINE_WH_DATA_SCIENCE was provisioned in
+# warehouses.tf and described in docs/architecture/01-account-warehouse.md as actively
+# running route-optimization notebooks, but no Functional Role ever granted USAGE on it --
+# there was no RBAC path to a warehouse the docs described as already in use. This role
+# closes that gap, following the same read-only-plus-warehouse-usage shape as fr_analyst.
+resource "snowflake_account_role" "fr_data_scientist" {
+  name    = upper("${var.org_prefix}_fr_data_scientist")
+  comment = "Functional Role: read-only access to ANALYTICS plus HARBORLINE_WH_DATA_SCIENCE usage. Granted to route-optimization/notebook users."
+}
+
+resource "snowflake_grant_account_role" "fr_data_scientist_inherits_analytics_select" {
+  role_name        = snowflake_account_role.ar_analytics_select.name
+  parent_role_name = snowflake_account_role.fr_data_scientist.name
+}
+
 # --- Warehouse USAGE: granted directly to Functional Roles (warehouses are account
 #     objects, not schema objects -- this is the one privilege type that reasonably skips
 #     the Access Role layer, since there's nothing more atomic to bundle). ---
@@ -114,5 +129,15 @@ resource "snowflake_grant_privileges_to_account_role" "fr_elt_warehouse_usage" {
   on_account_object {
     object_type = "WAREHOUSE"
     object_name = snowflake_warehouse.elt.name
+  }
+}
+
+resource "snowflake_grant_privileges_to_account_role" "fr_data_scientist_warehouse_usage" {
+  account_role_name = snowflake_account_role.fr_data_scientist.name
+  privileges        = ["USAGE"]
+
+  on_account_object {
+    object_type = "WAREHOUSE"
+    object_name = snowflake_warehouse.data_science.name
   }
 }

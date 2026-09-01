@@ -32,7 +32,7 @@ give it enough vocabulary that a dispatcher's actual phrasing lands on the right
 
 `terraform/genai/semantic_view.tf` builds one over the same illustrative `SHIPMENTS` table
 introduced in `docs/architecture/03-data-modeling.md`: a logical table aliased `shipments`,
-two facts (`total_weight_lbs`), three dimensions (`ship_date`, `origin_facility`, `status`),
+one fact (`total_weight_lbs`), three dimensions (`ship_date`, `origin_facility`, `status`),
 and two metrics (`total_shipments`, `total_weight_shipped_lbs`). It's intentionally small --
 enough to answer real dispatcher questions, not an attempt to model Harborline's entire
 schema in one pass. `SHIPMENTS` itself isn't created by this module, the same scoping
@@ -44,13 +44,18 @@ is real, the underlying table is illustrative until Harborline's actual data mod
 Cortex Analyst doesn't introduce a new privilege model -- it runs the SQL it generates
 under the caller's existing roles, so a user needs `SELECT` on whatever the semantic view
 references (here, `ANALYTICS.SHIPMENTS`, already covered by `HARBORLINE_AR_ANALYTICS_SELECT`
-via `HARBORLINE_FR_ANALYST`) and `USAGE` on the semantic view itself. The query executes
-against a real warehouse -- `terraform/genai/variables.tf` defaults that to
-`HARBORLINE_WH_BI`, the same warehouse human dashboard queries already use. Natural-language
-Q&A is an additional access pattern on governed data Harborline already has, not a new data
-platform layered on top of it -- the RBAC and warehouse discipline from
+via `HARBORLINE_FR_ANALYST`) and `USAGE` on the semantic view itself. Worth being precise
+about the warehouse, since an earlier draft of this doc got it wrong: `snowflake_semantic_view`
+has no warehouse attribute -- there's nothing on the semantic view resource itself that pins
+Cortex Analyst's generated SQL to a specific warehouse. The query runs on whatever warehouse
+the caller's session already has active, which for a dispatcher under `HARBORLINE_FR_ANALYST`
+is `HARBORLINE_WH_BI`, because that's the warehouse USAGE their role was already granted in
+`terraform/core/rbac.tf` -- not because anything in `terraform/genai/` configured it.
+Natural-language Q&A is an additional access pattern on governed data Harborline already
+has, not a new data platform layered on top of it -- the RBAC and warehouse discipline from
 `docs/architecture/01-account-warehouse.md` and `docs/architecture/02-security-governance-rbac.md`
-carries forward unchanged.
+carries forward unchanged, and in this case is the only thing actually determining which
+warehouse gets used.
 
 ## Sources
 

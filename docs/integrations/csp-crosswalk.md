@@ -20,7 +20,11 @@ separately.
 dependency: Snowflake needs to know about an IAM role before it can tell you the identity
 that role needs to trust. First, an IAM policy grants the permissions Snowflake actually needs
 against the bucket (`s3:GetBucketLocation`, `s3:GetObject`, `s3:ListBucket`, and optionally
-`s3:PutObject`/`s3:DeleteObject` if Snowflake will unload or purge data, not just read it).
+`s3:PutObject`/`s3:DeleteObject` if Snowflake will unload or purge data, not just read it --
+`terraform/aws/storage_integration.tf` grants the read-only set, matching GCS below, since
+Harborline's raw-landing pipe only ever ingests; an earlier draft granted Put/Delete
+unconditionally, tightened after a self-review found nothing in this repo actually used
+them).
 Second, an IAM role is created with a placeholder trust policy -- "Another AWS account" as the
 trusted entity, with a placeholder external ID, since the real values don't exist yet. Third,
 `CREATE STORAGE INTEGRATION` in Snowflake references that role's ARN along with allowed (and
@@ -114,13 +118,18 @@ service attachment on GCP).
 
 ## Terraform implications
 
-Each section above is a candidate for its own `aws/` and `gcp/` Terraform submodule once
-Terraform work starts (see `../../terraform/`, currently a placeholder): the storage
-integration setup, the notification/event-trigger wiring, and the private connectivity
-resources. The Snowflake-side resources (`CREATE STORAGE INTEGRATION`, the notification
-integration, the `SYSTEM$AUTHORIZE_PRIVATELINK` call) are the same provider regardless of
-cloud; only the AWS-provider and google-provider resources on the other side of each
-integration point actually diverge.
+Storage integration and the notification/event-trigger wiring are built, in `../../terraform/aws/`
+and `../../terraform/gcp/` respectively (`terraform validate`-clean against the pinned
+provider versions -- see `terraform/README.md`). This section was originally written before
+that Terraform existed and called these two "a candidate for its own submodule... once
+Terraform work starts" -- stale as of Phase 1's build, corrected here rather than left to
+mislead a reader checking the repo's actual state. Private connectivity is the one piece of
+this doc that stays documented-only; see `terraform/README.md` for why (an interactive
+Snowflake-support handshake, not a resource Terraform state can capture cleanly). The
+Snowflake-side resources (`CREATE STORAGE INTEGRATION`, the notification integration, the
+`SYSTEM$AUTHORIZE_PRIVATELINK` call) are the same provider regardless of cloud; only the
+AWS-provider and google-provider resources on the other side of each integration point
+actually diverge.
 
 ## Sources
 

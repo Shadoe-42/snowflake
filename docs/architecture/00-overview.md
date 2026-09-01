@@ -1,8 +1,11 @@
 # Architecture Overview
 
-Status: draft (full prose, 2026-08-24) -- sections 01-07 written, CSP crosswalk doc
-written, Terraform (core/aws/gcp) built and validate-clean, Harborline woven through 01-04.
-Sharing/clean rooms is still not started (sequenced with Phase 3).
+Status: draft (full prose, 2026-08-24, status line refreshed 2026-09-01) -- sections 01-07
+written, CSP crosswalk doc written, Terraform (core/aws/gcp) built and validate-clean,
+Harborline woven through 01-04. Phase 2 (GenAI/Cortex, `docs/genai/`) and Phase 3 (fin data
+warehouse variant plus Sharing/Clean Rooms, `docs/fin-warehouse/` and `docs/sharing/`) are
+both complete for their chosen scope -- see the root README's Roadmap for what each phase
+actually covers.
 
 Scope: broad "does it all" Snowflake reference architecture. Built small and incremental --
 this is the foundation Phase 2 (GenAI/Cortex) and Phase 3 (fin data warehouse) both branch

@@ -87,10 +87,20 @@ Harborline's RBAC starts at the on-ramp above: Access Roles + Functional Roles o
 Service Role layer yet -- one ELT pipeline, no third-party tools that need isolated
 credentials. `HARBORLINE_AR_RAW_SELECT`, `HARBORLINE_AR_ANALYTICS_SELECT`, and
 `HARBORLINE_AR_RAW_WRITE` are the three atomic Access Roles; `HARBORLINE_FR_ANALYST` (reads
-ANALYTICS, granted to dispatch/reporting users) and `HARBORLINE_FR_ELT` (writes RAW, reads
-both, granted to the pipeline identity) are the two Functional Roles that actually get
-assigned to anyone. See `terraform/core/rbac.tf` for the full grant wiring. Horizon Catalog
-tagging and SSO/MFA aren't Terraformed here -- both are account-level/edition-gated
+ANALYTICS, granted to dispatch/reporting users), `HARBORLINE_FR_ELT` (writes RAW, reads
+both, granted to the pipeline identity), and `HARBORLINE_FR_DATA_SCIENTIST` (reads
+ANALYTICS, granted `HARBORLINE_WH_DATA_SCIENCE` usage) are the three Functional Roles that
+actually get assigned to anyone. See `terraform/core/rbac.tf` for the full grant wiring.
+
+`HARBORLINE_FR_DATA_SCIENTIST` was added during an adversarial self-review, not in the
+original build: `HARBORLINE_WH_DATA_SCIENCE` existed in Terraform and was described in
+`docs/architecture/01-account-warehouse.md` as actively running route-optimization
+notebooks, but no role ever granted USAGE on it -- unlike every other unbuilt piece in this
+repo (`SHIPMENTS`, `CARRIER_DOCUMENTS`), that gap was never flagged as deliberately
+deferred, because it wasn't deliberate. Worth stating plainly rather than quietly patching
+it, consistent with how the Phase 3 sharing module's defects were handled.
+
+Horizon Catalog tagging and SSO/MFA aren't Terraformed here -- both are account-level/edition-gated
 configuration more naturally done in the Snowflake console or via `SYSTEM$` procedures than
 as declarative resources, so they stay documented-only for now, the same reasoning applied
 to private connectivity in the CSP crosswalk doc.

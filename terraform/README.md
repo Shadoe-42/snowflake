@@ -66,6 +66,34 @@ isn't how Snowflake actually scopes row access on shared data -- it now uses
 Snowflake's documented pattern. See `docs/sharing/sharing-clean-rooms.md` for the full
 account.
 
+A second adversarial self-review pass, this one against `core/`, `aws/`, and `genai/`
+(Phase 1 and Phase 2), caught three more defects of the same class -- plausible-looking
+things that `terraform validate` had no way to catch because it only checks syntax, not
+whether the pieces actually do what the docs claim:
+
+- `core/rbac.tf` provisioned `HARBORLINE_WH_DATA_SCIENCE` with no Functional Role ever
+  granted USAGE on it, even though `docs/architecture/01-account-warehouse.md` described
+  it as already running real notebooks. Unlike every other unbuilt piece in this repo, that
+  gap was never flagged as deliberately deferred. Fixed by adding
+  `HARBORLINE_FR_DATA_SCIENTIST`, granted `HARBORLINE_AR_ANALYTICS_SELECT` and warehouse
+  USAGE, the same shape as `fr_analyst`.
+- `genai/variables.tf` declared an `analyst_warehouse` variable, described as the warehouse
+  Cortex Analyst's generated SQL runs against -- and `docs/genai/01-cortex-analyst.md`
+  repeated that as fact. `snowflake_semantic_view` has no warehouse attribute (confirmed
+  against the live provider schema); the variable was never referenced by any resource.
+  Removed, and the doc corrected to explain the real mechanism: the query runs on whatever
+  warehouse the caller's role already has USAGE on via `core/rbac.tf`, an RBAC/session
+  property, not something this module configures.
+- `aws/storage_integration.tf` granted `s3:PutObject`/`s3:DeleteObject` unconditionally,
+  though nothing in this repo's pipe unloads or purges data, and `gcp/storage_integration.tf`
+  correctly scopes the equivalent grant to read-only for the identical ingestion job.
+  Tightened to `s3:GetObject` only, matching GCS.
+
+Two stale status lines from before Phase 2 and Phase 3 existed --
+`docs/architecture/00-overview.md` still saying sharing was "not started," and this doc's
+own CSP-crosswalk companion still calling the AWS/GCP Terraform "a placeholder" -- were
+also caught and corrected in the same pass.
+
 ## The AWS two-phase apply
 
 `aws/storage_integration.tf` has a real circular dependency to work around:
