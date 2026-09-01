@@ -1,6 +1,6 @@
 # GenAI / Cortex Overview
 
-Status: draft (full prose, 2026-08-24)
+Status: draft (full prose, 2026-09-01)
 
 Scope: Phase 2 narrows Phase 1's general Snowflake foundation into Harborline Logistics'
 actual GenAI use case set, rather than surveying everything Cortex can do. "Small and
@@ -38,6 +38,25 @@ Three adjacent capabilities were considered and left out, deliberately, not by o
   Python API (`snowflake-ml-python`), not SQL or Terraform -- a different enough surface
   that it deserves its own pass rather than being squeezed into this one.
 
+## Business case: why Cortex, not a standalone agent platform
+
+Worth answering directly rather than leaving implicit: Harborline is not standing up a
+separate agent platform for this use case, and that is a build-versus-buy decision, not an
+oversight. Cortex Analyst, Search, and Agents run inside Snowflake, against data already
+under Snowflake's governed access model -- no new runtime to provision, no separate identity
+system to wire up, no data leaving the platform Harborline already trusts for shipment
+records in order to reach an agent. A platform like Google Cloud's Gemini Enterprise Agent
+Platform or IBM's watsonx.governance-orchestrated agents would mean adopting a genuinely
+separate agent platform, plus the governance apparatus that platform requires to run
+responsibly -- covered in real depth in a companion reference repo,
+`ai_agent_governance_patterns` (see `docs/genai/04-cortex-governance.md`). That apparatus
+earns its cost at the AI-adoption stages where agents take actions with real financial or
+operational consequences across multiple systems. Harborline's dispatch assistant does not
+reach that bar -- it answers questions against data it already has governed access to, and
+stops there. The right call at Harborline's actual stage is to use the platform-native
+capability already inside the data platform, not to build or adopt a second one the use case
+does not yet justify.
+
 ## Ground rules carried forward from Phase 1
 
 Cortex is Snowflake-native compute -- there's no CSP divergence the way ingestion had one
@@ -56,6 +75,8 @@ doc set.
 1. cortex-analyst -- semantic views, natural-language-to-SQL over governed data
 2. cortex-search -- hybrid search over unstructured text
 3. cortex-agents -- orchestration, tool routing, agent security
+4. cortex-governance -- where Harborline's agent sits on an AI-adoption maturity model, what
+   Cortex governs natively versus what a dedicated agent-governance platform would add
 
 ## Open items
 
@@ -78,3 +99,6 @@ doc set.
   Records Strategy," Snowflake Inc., 2024 (private research directory, not part of this
   repo) -- Snowflake's own material, more substantive than the above, still a vendor
   document.
+- `ai_agent_governance_patterns` -- https://github.com/Shadoe-42/ai_agent_governance_patterns
+  -- companion repo, source of the AI-adoption maturity framing used in
+  `docs/genai/04-cortex-governance.md`.

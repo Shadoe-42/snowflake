@@ -60,13 +60,14 @@ on-ramp -- the same pieces docs 01-04 cover in prose, laid out as one picture. S
 | `docs/genai/01-cortex-analyst.md` | Semantic views (the modern, Terraformed replacement for the legacy YAML semantic model), natural-language-to-SQL |
 | `docs/genai/02-cortex-search.md` | Hybrid semantic + keyword search over unstructured text, kept fresh via target_lag |
 | `docs/genai/03-cortex-agents.md` | Orchestration/tool-routing, and why an agent needs no identity of its own |
+| `docs/genai/04-cortex-governance.md` | Where Harborline's agent sits on an AI-adoption maturity model borrowed from a companion repo, and what Cortex governs natively versus what a dedicated agent-governance platform would add |
 | `docs/fin-warehouse/00-overview.md` | Phase 3: what's different for Éclairage des Lanternes (payments) vs. Harborline's general foundation |
 | `docs/sharing/sharing-clean-rooms.md` | Secure Data Sharing and Data Clean Rooms: the aggregation-as-privacy-boundary pattern, and where the two diverge |
 | `terraform/core/` | Cloud-agnostic Snowflake resources: resource monitor, warehouses, database/schemas, RBAC |
 | `terraform/aws/` | S3 + IAM storage integration, direct S3-to-SQS Snowpipe auto-ingest |
 | `terraform/gcp/` | GCS + service-account storage integration, GCS-notification-to-Pub/Sub Snowpipe auto-ingest |
 | `terraform/genai/` | A Cortex Analyst semantic view, a Cortex Search service, and a Cortex Agent tying both together |
-| `terraform/sharing/` | A classified/masked/row-access-scoped column, a pre-aggregated secure view, and a share exposing only that view |
+| `terraform/sharing/` | A classified, row-access-scoped column, a pre-aggregated secure view with small-cell suppression, and a share exposing only that view -- no masking policy (removed after a self-review found it protected nothing) |
 | `harborline_snowflake_platform_hld.svg` / `.png` | Phase 1 architecture diagram |
 | `examples/` | Placeholder -- empty until the architecture docs are stable enough to demonstrate concretely against Harborline |
 
@@ -79,6 +80,9 @@ on-ramp -- the same pieces docs 01-04 cover in prose, laid out as one picture. S
   (via semantic views), Cortex Search, and Cortex Agents -- docs and Terraform
   (`terraform/genai/`, `terraform validate`-clean), still on Harborline. Document AI, Cortex
   Functions, and Snowflake ML were deliberately scoped out -- see `docs/genai/00-overview.md`.
+  A governance doc (`docs/genai/04-cortex-governance.md`) cross-links a companion repo,
+  `ai_agent_governance_patterns`, for the deeper AI-adoption maturity and platform-governance
+  reasoning this phase's use case does not yet need in full.
 - **Phase 3 -- Fin data warehouse variant (complete for its chosen scope).** Éclairage des
   Lanternes (payments processor), a focused variant doc rather than a full 00-07 rebuild,
   and the Sharing & Data Clean Rooms doc as the centerpiece -- plus Terraform
